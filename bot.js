@@ -75,7 +75,7 @@ bot.on('message', msg => {
           },
           {
             name: "XP",
-            value: userXP,
+            value: userXP + " (next level at " + getXPFromLevel(getLevelFromXP(userXP) + 1) + ")",
             inline: true
           },
         ],
@@ -104,6 +104,10 @@ function getRandomInt(min, max) {
 // calculate level from xp
 function getLevelFromXP(xp) {
   return Math.floor(0.2 * Math.sqrt(xp));
+}
+
+function getXPFromLevel(level) {
+  return Math.floor(level*5*level*5);
 }
 
 function loadConfiguration(callback) {
