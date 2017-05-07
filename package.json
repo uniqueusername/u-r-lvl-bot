@@ -10,7 +10,7 @@
   "repository": "https://github.com/uniqueusername/urlvlbot",
   "author": "Aryan Jha <aryan@jha.io>",
   "dependencies": {
-    "discord.js": "*",
+    "discord.js": "hydrabolt/discord.js",
     "json-beautify": "*"
   },
   "main": "bot.js"

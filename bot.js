@@ -59,7 +59,30 @@ bot.on('message', msg => {
   var userXP = JSON.parse(fs.readFileSync('userLevels.json'))[msg.author.id]
 
   if (msg.content.includes("where is the cheeto nick")) {
-    msg.reply(xpMessages[getRandomInt(0, xpMessages.length)] + '``' + userXP + '`` xp, level ``' + getLevelFromXP(userXP) + '``');
+    msg.channel.send({
+      embed: {
+        author: {
+          name: msg.author.username,
+        },
+        description: xpMessages[getRandomInt(0, xpMessages.length)],
+        thumbnail: { url: msg.author.avatarURL() },
+        color: 0xffffff,
+        fields: [
+          {
+            name: "Level",
+            value: getLevelFromXP(userXP),
+            inline: true
+          },
+          {
+            name: "XP",
+            value: userXP,
+            inline: true
+          },
+        ],
+        footer: { text: 'uniqueusername/u-r-lvl-bot' }
+      }
+    });
+
   }
 });
 
