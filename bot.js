@@ -57,8 +57,17 @@ bot.on('message', msg => {
 // check amount of xp
 bot.on('message', msg => {
   var userXP = JSON.parse(fs.readFileSync('userLevels.json'))[msg.author.id]
+  var userRanks = []
+  userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
 
   if (msg.content.includes("where is the cheeto nick")) {
+
+    for (var key in userLevels) {
+      userRanks.push(userLevels[key]);
+    }
+    userRanks = userRanks.sort(sortNumber).reverse();
+    let userRank = userRanks.indexOf(userXP) + 1;
+
     msg.channel.send({
       embed: {
         author: {
@@ -78,6 +87,11 @@ bot.on('message', msg => {
             value: userXP + " (next level at " + getXPFromLevel(getLevelFromXP(userXP) + 1) + ")",
             inline: true
           },
+          {
+            name: "Rank",
+            value: userRank + "/" + userRanks.length,
+            inline: true
+          }
         ],
         footer: { text: 'uniqueusername/u-r-lvl-bot' }
       }
@@ -101,11 +115,17 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max-min) + min);
 }
 
+// numerical sorting function
+function sortNumber(a, b) {
+  return a - b;
+}
+
 // calculate level from xp
 function getLevelFromXP(xp) {
   return Math.floor(0.2 * Math.sqrt(xp));
 }
 
+// calculate xp from level
 function getXPFromLevel(level) {
   return Math.floor(level*5*level*5);
 }

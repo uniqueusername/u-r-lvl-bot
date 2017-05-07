@@ -11,7 +11,8 @@
   "author": "Aryan Jha <aryan@jha.io>",
   "dependencies": {
     "discord.js": "hydrabolt/discord.js",
-    "json-beautify": "*"
+    "json-beautify": "*",
+    "lodash": "*"
   },
   "main": "bot.js"
 }
