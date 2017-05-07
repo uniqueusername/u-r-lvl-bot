@@ -1,0 +1,17 @@
+{
+  "name": "urlvlbot",
+  "version": "0.1.0",
+  "description": "a level bot that actually does something",
+  "keywords": [
+    "discord",
+    "bot",
+    "chatbot"
+  ],
+  "repository": "https://github.com/uniqueusername/urlvlbot",
+  "author": "Aryan Jha <aryan@jha.io>",
+  "dependencies": {
+    "discord.js": "*",
+    "json-beautify": "*"
+  },
+  "main": "bot.js"
+}
