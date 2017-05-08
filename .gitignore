@@ -1,3 +1,4 @@
 node_modules/
 userLevels.json
 config.json
+npm-debug.log

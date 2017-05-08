@@ -12,7 +12,7 @@
   "dependencies": {
     "discord.js": "hydrabolt/discord.js",
     "json-beautify": "*",
-    "lodash": "*"
+    "random-hex-color": "*"
   },
   "main": "bot.js"
 }

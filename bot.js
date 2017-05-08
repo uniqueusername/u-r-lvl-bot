@@ -10,7 +10,7 @@ var beautify = require('json-beautify');
 var config;
 var userLevels = {};
 var userStats = {}; // timer, message count, message array
-var itemShop = JSON.parse(fs.readFileSync('itemShop.json'));
+var itemShop = JSON.parse(fs.readFileSync('itemshop/itemShop.json'));
 
 var xpMessages = ["i think this is slavery but you have ", "u fuck u got ", "when do i get my paycheck, because it better be more than ", "i really am not getting paid for this, can i have some of that juicy ", "u could buy a car with this dank af ", "idk what youre smoking but thats a thicc ", "the snail sleeps for ", "dad said he went to the store but i havent seen him since the fall of ", "you are now allowed to identify as this many genders: ", "bush did ", "where is the cheeto nick"];
 
@@ -52,7 +52,7 @@ bot.on('message', msg => {
 // check amount of xp
 bot.on('message', msg => {
 
-  if (msg.content.includes("where is the cheeto nick")) {
+  if (msg.content.toLowerCase().includes("where is the cheeto nick") || msg.content.toLowerCase() === "_rank") {
 
     var userXP = JSON.parse(fs.readFileSync('userLevels.json'))[msg.author.id][0];
     var userRanks = []
@@ -80,12 +80,12 @@ bot.on('message', msg => {
           },
           {
             name: "XP",
-            value: userXP + " (next level at " + getXPFromLevel(getLevelFromXP(userXP) + 1) + ")",
+            value: `${userXP}/${getXPFromLevel(getLevelFromXP(userXP) + 1)}`,
             inline: true
           },
           {
             name: "Rank",
-            value: userRank + "/" + userRanks.length,
+            value: `${userRank}/${userRanks.length}`,
             inline: true
           },
           {
@@ -104,7 +104,7 @@ bot.on('message', msg => {
 // token shop
 bot.on('message', msg => {
 
-  if (msg.content.toLowerCase() == ('open shop')) {
+  if (msg.content.toLowerCase() == ('open shop') || msg.content.toLowerCase() == "_shop") {
     msg.channel.send("Check your DMs.");
     msg.author.send("```" +
       "Level 5:\n" +
@@ -125,8 +125,12 @@ bot.on('message', msg => {
       } else if (getTokensFromTotalXP(userLevels[msg.author.id][1]) < selectedItem["cost"]) {
         msg.channel.send("You don't have enough tokens for ``" + selectedItem["description"] + "``");
       } else {
+        module.exports = { userLevels: userLevels, client: bot, msg: msg };
+        delete require.cache[require.resolve('./itemshop/' + selectedItem["file"])];
+        require('./itemshop/' + selectedItem["file"]);
         userLevels[msg.author.id][1] -= selectedItem["cost"] * 1000;
-        msg.channel.send("Item purchased.");
+        msg.channel.send("Successfully purchased ``" + selectedItem["description"] + "``");
+        fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
       }
     }
   };
@@ -169,6 +173,7 @@ function getXPFromLevel(level) {
   return Math.floor(level*5*level*5);
 }
 
+// calculate tokens from total xp
 function getTokensFromTotalXP(totalxp) {
   return Math.floor(totalxp / 1000);
 }
