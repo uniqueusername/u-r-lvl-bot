@@ -16,3 +16,15 @@ bot.client.guilds.first().createRole({
 })
 .then( role => { colorRole = role; return colorRole } )
 .then( colorRole => { bot.msg.member.addRole(colorRole) } )
+
+bot.msg.channel.send({
+  embed: {
+    author: {
+      name: "Transaction Complete",
+      icon_url: bot.msg.author.avatarURL()
+    },
+    description: 'Successfully purchased ``color change (random)``.',
+    color: parseInt(randomHex),
+    footer: { text: 'uniqueusername/u-r-lvl-bot' }
+  }
+});

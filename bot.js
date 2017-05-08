@@ -52,7 +52,7 @@ bot.on('message', msg => {
 // check amount of xp
 bot.on('message', msg => {
 
-  if (msg.content.toLowerCase().includes("where is the cheeto nick") || msg.content.toLowerCase() === "_rank") {
+  if (msg.content.toLowerCase() == ("where is the cheeto nick") || msg.content.toLowerCase() === "_rank") {
 
     var userXP = JSON.parse(fs.readFileSync('userLevels.json'))[msg.author.id][0];
     var userRanks = []
@@ -67,7 +67,7 @@ bot.on('message', msg => {
     msg.channel.send({
       embed: {
         author: {
-          name: msg.author.username,
+          name: msg.member.nickname,
         },
         description: xpMessages[getRandomInt(0, xpMessages.length)],
         thumbnail: { url: msg.author.avatarURL() },
@@ -108,7 +108,7 @@ bot.on('message', msg => {
     msg.channel.send("Check your DMs.");
     msg.author.send("```" +
       "Level 5:\n" +
-      "1 - color change (random) [2 tokens]\n" +
+      "1 - color change (random) [1 tokens]\n" +
       "\n" +
       "Level 20:\n" +
       "2 - color change (hex code) [15 tokens]" +
@@ -125,11 +125,10 @@ bot.on('message', msg => {
       } else if (getTokensFromTotalXP(userLevels[msg.author.id][1]) < selectedItem["cost"]) {
         msg.channel.send("You don't have enough tokens for ``" + selectedItem["description"] + "``");
       } else {
-        module.exports = { userLevels: userLevels, client: bot, msg: msg };
+        module.exports = { userLevels: userLevels, client: bot, msg: msg, selectedItem: selectedItem };
         delete require.cache[require.resolve('./itemshop/' + selectedItem["file"])];
         require('./itemshop/' + selectedItem["file"]);
         userLevels[msg.author.id][1] -= selectedItem["cost"] * 1000;
-        msg.channel.send("Successfully purchased ``" + selectedItem["description"] + "``");
         fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
       }
     }
@@ -151,7 +150,7 @@ bot.on('message', msg => {
     userLevels[msg.mentions.users.firstKey()][1] = 0;
     fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
   }
-})
+});
 
 // random int function
 function getRandomInt(min, max) {
