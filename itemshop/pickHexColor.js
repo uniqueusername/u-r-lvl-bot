@@ -2,11 +2,10 @@ var bot = require('../bot.js');
 var fs = require('fs');
 var colorRole;
 
-var rolesToRemove = bot.msg.member.roles.filter(role => role.name.startsWith("#"));
-bot.msg.member.removeRoles(bot.msg.member.roles.filter(role => role.name.startsWith("#")));
-rolesToRemove.deleteAll();
-
 if (/^#[0-9A-F]{6}$/i.test(bot.msg.content.split(" ")[2])) {
+  var rolesToRemove = bot.msg.member.roles.filter(role => role.name.startsWith("#"));
+  bot.msg.member.removeRoles(bot.msg.member.roles.filter(role => role.name.startsWith("#")));
+  rolesToRemove.deleteAll();
   var colorToSet = bot.msg.content.split(" ")[2].substr(1);
   var colorToSet = "0x" + colorToSet;
   bot.client.guilds.first().createRole({
