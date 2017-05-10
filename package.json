@@ -12,7 +12,8 @@
   "dependencies": {
     "discord.js": "hydrabolt/discord.js",
     "json-beautify": "*",
-    "random-hex-color": "*"
+    "random-hex-color": "*",
+    "nunjucks": "*"
   },
   "main": "bot.js"
 }

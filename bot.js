@@ -4,6 +4,9 @@ var Discord = require('discord.js');
 var bot = new Discord.Client();
 var fs = require('fs');
 var beautify = require('json-beautify');
+var nunjucks = require('nunjucks');
+
+nunjucks.configure({ autoescape: true, trimBlocks: true, lstripBlocks: true });
 
 // global vars
 
@@ -106,20 +109,21 @@ bot.on('message', msg => {
 
   if (msg.content.toLowerCase() == ('open shop') || msg.content.toLowerCase() == "_shop") {
     msg.channel.send("Check your DMs.");
-    msg.author.send("```" +
-      "Level 5:\n" +
-      "1 - color change (random) [1 tokens]\n" +
-      "\n" +
-      "Level 20:\n" +
-      "2 - color change (hex code) [15 tokens]" +
-      "```"
-    );
+    // msg.author.send("```" +
+    //   "Level 5:\n" +
+    //   "1 - color change (random) [1 tokens]\n" +
+    //   "\n" +
+    //   "Level 20:\n" +
+    //   "2 - color change (hex code) [15 tokens]" +
+    //   "```"
+    // );
+    msg.author.send(nunjucks.render('itemshop/shop.template', itemShop));
   }
 
   if (msg.content.toLowerCase().includes('purchase')) {
-    if (itemShop[msg.content.toLowerCase().split(" ")[1]] != undefined) {
+    if (itemShop["itemShop"][parseInt(msg.content.toLowerCase().split(" ")[1]) - 1] != undefined) {
       var userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
-      let selectedItem = itemShop[msg.content.toLowerCase().split(" ")[1]];
+      let selectedItem = itemShop["itemShop"][parseInt(msg.content.toLowerCase().split(" ")[1]) - 1];
       if (getLevelFromXP(userLevels[msg.author.id][0]) < selectedItem["level"]) {
         msg.channel.send("You don't meet the level requirement ``(" + selectedItem["level"] + ")`` for ``" + selectedItem["description"] + "``");
       } else if (getTokensFromTotalXP(userLevels[msg.author.id][1]) < selectedItem["cost"]) {
@@ -143,20 +147,22 @@ bot.on('message', msg => {
     var userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
     userLevels[msg.mentions.users.firstKey()][0] = 0;
     fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
+    msg.channel.send('get dunkd');
   }
   if (msg.content.toLowerCase().includes('reset tokens of') && msg.author.id == '83807335650164736') {
     var userToReset = msg.content.split(' ')[3];
     var userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
     userLevels[msg.mentions.users.firstKey()][1] = 0;
     fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
+    msg.channel.send('get dunkd');
   }
 });
 
 // feature request/report
 bot.on('message', msg => {
   if (msg.content.startsWith("_request")) {
-    bot.fetchUser(config.adminID);
-    .then(userPromise => userPromise.send(`**${msg.author} says** ${msg.content}`));
+    bot.fetchUser(config.adminID)
+    .then(userPromise => userPromise.send(`${msg.author} says${cut(msg.content, 0, 7)}`));
   }
 });
 
@@ -168,6 +174,11 @@ function getRandomInt(min, max) {
 // numerical sorting function
 function sortNumber(a, b) {
   return a - b;
+}
+
+// cut out part of a string
+function cut(str, cutStart, cutEnd){
+  return str.substr(0,cutStart) + str.substr(cutEnd+1);
 }
 
 // calculate level from xp

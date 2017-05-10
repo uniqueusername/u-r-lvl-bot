@@ -1,0 +1,3 @@
+```{% for item in itemShop %}
+{{ loop.index }} - {{ item.description }} [{{ item.cost }} {% if item.cost === 1 %}token{% else %}tokens{% endif %}] [level {{ item.level }}]
+{% endfor %}```
