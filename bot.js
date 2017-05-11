@@ -108,15 +108,7 @@ bot.on('message', msg => {
 bot.on('message', msg => {
 
   if (msg.content.toLowerCase() == ('open shop') || msg.content.toLowerCase() == "_shop") {
-    msg.channel.send("Check your DMs.");
-    // msg.author.send("```" +
-    //   "Level 5:\n" +
-    //   "1 - color change (random) [1 tokens]\n" +
-    //   "\n" +
-    //   "Level 20:\n" +
-    //   "2 - color change (hex code) [15 tokens]" +
-    //   "```"
-    // );
+    msg.react("✓");
     msg.author.send(nunjucks.render('itemshop/shop.template', itemShop));
   }
 
