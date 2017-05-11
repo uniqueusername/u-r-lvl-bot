@@ -108,7 +108,7 @@ bot.on('message', msg => {
 bot.on('message', msg => {
 
   if (msg.content.toLowerCase() == ('open shop') || msg.content.toLowerCase() == "_shop") {
-    msg.react("✓");
+    msg.react("✅");
     msg.author.send(nunjucks.render('itemshop/shop.template', itemShop));
   }
 
