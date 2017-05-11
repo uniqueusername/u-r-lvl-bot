@@ -142,14 +142,14 @@ bot.on('message', msg => {
 
 // xp and token resetter
 bot.on('message', msg => {
-  if (msg.content.toLowerCase().includes('reset xp of') && msg.author.id == '83807335650164736') {
+  if (msg.content.toLowerCase().includes('reset xp of') && msg.author.id == config.adminID) {
     var userToReset = msg.content.split(' ')[3];
     var userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
     userLevels[msg.mentions.users.firstKey()][0] = 0;
     fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
     msg.channel.send('get dunkd');
   }
-  if (msg.content.toLowerCase().includes('reset tokens of') && msg.author.id == '83807335650164736') {
+  if (msg.content.toLowerCase().includes('reset tokens of') && msg.author.id == config.adminID) {
     var userToReset = msg.content.split(' ')[3];
     var userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
     userLevels[msg.mentions.users.firstKey()][1] = 0;
