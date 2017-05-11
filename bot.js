@@ -120,7 +120,7 @@ bot.on('message', msg => {
     msg.author.send(nunjucks.render('itemshop/shop.template', itemShop));
   }
 
-  if (msg.content.toLowerCase().includes('purchase')) {
+  if (msg.content.toLowerCase().startsWith('_purchase')) {
     if (itemShop["itemShop"][parseInt(msg.content.toLowerCase().split(" ")[1]) - 1] != undefined) {
       var userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
       let selectedItem = itemShop["itemShop"][parseInt(msg.content.toLowerCase().split(" ")[1]) - 1];
@@ -142,19 +142,52 @@ bot.on('message', msg => {
 
 // xp and token resetter
 bot.on('message', msg => {
-  if (msg.content.toLowerCase().includes('reset xp of') && msg.author.id == config.adminID) {
-    var userToReset = msg.content.split(' ')[3];
+  if (msg.content.toLowerCase().startsWith('reset xp of') && msg.author.id == config.adminID) {
     var userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
-    userLevels[msg.mentions.users.firstKey()][0] = 0;
-    fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
-    msg.channel.send('get dunkd');
+    var userToReset = msg.mentions.users.firstKey();
+    if (userLevels[userToReset] != undefined) {
+      userLevels[userToReset][0] = 0;
+      fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
+      msg.channel.send('get dunkd');
+    } else {
+      msg.channel.send("That user has no xp.");
+    }
   }
-  if (msg.content.toLowerCase().includes('reset tokens of') && msg.author.id == config.adminID) {
-    var userToReset = msg.content.split(' ')[3];
+
+  if (msg.content.toLowerCase().startsWith('reset tokens of') && msg.author.id == config.adminID) {
     var userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
-    userLevels[msg.mentions.users.firstKey()][1] = 0;
-    fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
-    msg.channel.send('get dunkd');
+    var userToReset = msg.mentions.users.firstKey();
+    if (userLevels[userToReset] != undefined) {
+      userLevels[userToReset][1] = 0;
+      fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
+      msg.channel.send('get dunkd');
+    } else {
+      msg.channel.send("That user has no tokens.");
+    }
+  }
+});
+
+bot.on('message', msg => {
+  if (msg.content.toLowerCase().startsWith('_gift')) {
+    var userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
+    var userToGift = msg.mentions.users.firstKey();
+    if (userLevels[userToGift] == undefined) {
+      userLevels[userToGift] = [0, 0];
+    }
+
+    if (isNaN(parseInt(msg.content.split(' ')[2])) === false) {
+      var amountToGift = parseInt(msg.content.split(' ')[2]);
+      if (userLevels[msg.author.id][1] >= amountToGift*1000) {
+        userLevels[msg.author.id][1] -= amountToGift*1000;
+        userLevels[userToGift][1] += amountToGift*1000;
+        fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
+        msg.channel.send(`You have gifted <@${userToGift}> ${amountToGift} tokens!`);
+      } else {
+        msg.channel.send("You don't have that many tokens!");
+      }
+    } else {
+      msg.channel.send("Invalid amount of tokens! Make sure you send your message in the form ``_gift @userToGift tokensToGift``");
+    }
   }
 });
 
