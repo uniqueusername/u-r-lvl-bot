@@ -193,14 +193,6 @@ bot.on('message', msg => {
   }
 });
 
-// feature request/report
-bot.on('message', msg => {
-  if (msg.content.startsWith("_request")) {
-    bot.fetchUser(config.adminID)
-    .then(userPromise => userPromise.send(`${msg.author} says${cut(msg.content, 0, 7)}`));
-  }
-});
-
 // random int function
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max-min) + min);

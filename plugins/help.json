@@ -22,10 +22,5 @@
     "name": "_gift",
     "description": "gift another user tokens (will draw from your token count)",
     "syntax": "_gift [user to gift] [number of tokens]"
-  },
-  {
-    "name": "_request",
-    "description": "request a feature or report an issue directly (preferably post on the padlet [pinned in #announcements])",
-    "syntax": "_request [your request]"
   }
 ]}
