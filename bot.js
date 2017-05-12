@@ -13,7 +13,8 @@ nunjucks.configure({ autoescape: true, trimBlocks: true, lstripBlocks: true });
 var config;
 var userLevels = {};
 var userStats = {}; // timer, message count, message array
-var itemShop = JSON.parse(fs.readFileSync('itemshop/itemShop.json'));
+var itemShop = JSON.parse(fs.readFileSync('plugins/itemShop.json'));
+var helpList = JSON.parse(fs.readFileSync('plugins/help.json'));
 
 var xpMessages = ["i think this is slavery but you have ", "u fuck u got ", "when do i get my paycheck, because it better be more than ", "i really am not getting paid for this, can i have some of that juicy ", "u could buy a car with this dank af ", "idk what youre smoking but thats a thicc ", "the snail sleeps for ", "dad said he went to the store but i havent seen him since the fall of ", "you are now allowed to identify as this many genders: ", "bush did ", "where is the cheeto nick"];
 
@@ -109,7 +110,7 @@ bot.on('message', msg => {
 
   if (msg.content.toLowerCase() == ('open shop') || msg.content.toLowerCase() == "_shop") {
     msg.react("✅");
-    msg.author.send(nunjucks.render('itemshop/shop.template', itemShop));
+    msg.author.send(nunjucks.render('plugins/shop.template', itemShop));
   }
 
   if (msg.content.toLowerCase().startsWith('_purchase')) {
@@ -122,14 +123,22 @@ bot.on('message', msg => {
         msg.channel.send("You don't have enough tokens for ``" + selectedItem["description"] + "``");
       } else {
         module.exports = { userLevels: userLevels, client: bot, msg: msg, selectedItem: selectedItem };
-        delete require.cache[require.resolve('./itemshop/' + selectedItem["file"])];
-        require('./itemshop/' + selectedItem["file"]);
+        delete require.cache[require.resolve('./plugins/' + selectedItem["file"])];
+        require('./plugins/' + selectedItem["file"]);
         userLevels[msg.author.id][1] -= selectedItem["cost"] * 1000;
         fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
       }
     }
   };
 
+});
+
+// help command
+bot.on('message', msg => {
+  if (msg.content.toLowerCase() == ('_help')) {
+    msg.react("✅");
+    msg.author.send(nunjucks.render('plugins/help.template', helpList));
+  }
 });
 
 // xp and token resetter
@@ -159,6 +168,7 @@ bot.on('message', msg => {
   }
 });
 
+// gift another user tokens
 bot.on('message', msg => {
   if (msg.content.toLowerCase().startsWith('_gift')) {
     var userLevels = JSON.parse(fs.readFileSync('userLevels.json'));

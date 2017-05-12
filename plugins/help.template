@@ -1,0 +1,6 @@
+```{% for command in helpList %}
+{{ command.name }} - {{ command.description }}
+{% if command.syntax|length !== 0 %}"{{ command.syntax }}"
+{% endif %}
+——————————————————————————————
+{% endfor %}```
