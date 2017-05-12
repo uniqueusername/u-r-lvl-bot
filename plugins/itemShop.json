@@ -8,8 +8,8 @@
   },
   {
     "description": "color change (hex code)",
-    "level": 20,
-    "cost": 12,
+    "level": 12,
+    "cost": 15,
     "file": "pickHexColor.js"
   }
 ]}
