@@ -21,36 +21,38 @@ var xpMessages = ["i think this is slavery but you have ", "u fuck u got ", "whe
 // give xp per message
 bot.on('message', msg => {
 
-  userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
-  let userLevelStats = userStats[msg.author.id];
+  if(msg.member.roles.filter(role => role.name == ("STRIKE"))) {
+    userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
+    let userLevelStats = userStats[msg.author.id];
 
-  // dynamically add xp based on amount of characters and message sent within a minute
-  if (userLevels[msg.author.id] == undefined) {
-    userLevels[msg.author.id] = [0, 0]; // set xp and tokens to 0
-  }
-  if (userLevelStats == undefined) {
-    userLevelStats = { "timerEnabled": false, "messageArray": [] };
-    userStats[msg.author.id] = userLevelStats;
-  }
-  userLevelStats["messageArray"].push(msg.content); // push the message into the message array
-  if (userLevelStats["timerEnabled"] === false) {
-    const numCharacters = userLevelStats["messageArray"].join("").split(" ").join("").length // number of characters in message array without spaces
-    const averageCharacters = Math.floor( numCharacters / userLevelStats["messageArray"].length); // amount of xp per current minute
-    userLevels[msg.author.id][0] += averageCharacters; // add character count / number of messages to user total xp
-    userLevels[msg.author.id][1] += averageCharacters; // add gained xp to token count
-    userLevelStats["timerEnabled"] = true; // 1 for timer enabled
-    userLevelStats["messageArray"] = []; // reset message array
-    // timeout to reset timer after 60 seconds
-    setTimeout(function() {
-      userLevelStats["timerEnabled"] = false;
-    }, 60000);
-    userStats[msg.author.id] = userLevelStats;
-  } else {
-    userStats[msg.author.id] = userLevelStats;
-  }
+    // dynamically add xp based on amount of characters and message sent within a minute
+    if (userLevels[msg.author.id] == undefined) {
+      userLevels[msg.author.id] = [0, 0]; // set xp and tokens to 0
+    }
+    if (userLevelStats == undefined) {
+      userLevelStats = { "timerEnabled": false, "messageArray": [] };
+      userStats[msg.author.id] = userLevelStats;
+    }
+    userLevelStats["messageArray"].push(msg.content); // push the message into the message array
+    if (userLevelStats["timerEnabled"] === false) {
+      const numCharacters = userLevelStats["messageArray"].join("").split(" ").join("").length // number of characters in message array without spaces
+      const averageCharacters = Math.floor( numCharacters / userLevelStats["messageArray"].length); // amount of xp per current minute
+      userLevels[msg.author.id][0] += averageCharacters; // add character count / number of messages to user total xp
+      userLevels[msg.author.id][1] += averageCharacters; // add gained xp to token count
+      userLevelStats["timerEnabled"] = true; // 1 for timer enabled
+      userLevelStats["messageArray"] = []; // reset message array
+      // timeout to reset timer after 60 seconds
+      setTimeout(function() {
+        userLevelStats["timerEnabled"] = false;
+      }, 60000);
+      userStats[msg.author.id] = userLevelStats;
+    } else {
+      userStats[msg.author.id] = userLevelStats;
+    }
 
-  fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
+    fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
 
+  }
 });
 
 // check amount of xp
