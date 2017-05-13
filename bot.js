@@ -58,52 +58,67 @@ bot.on('message', msg => {
 // check amount of xp
 bot.on('message', msg => {
 
-  if (msg.content.toLowerCase() == ("where is the cheeto nick") || msg.content.toLowerCase() === "_rank") {
+  xpChecker: { if (msg.content.toLowerCase() == ("where is the cheeto nick") || msg.content.toLowerCase() === "_rank") {
 
-    var userXP = JSON.parse(fs.readFileSync('userLevels.json'))[msg.author.id][0];
-    var userRanks = []
-    userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
-
-    for (var key in userLevels) {
-      userRanks.push(userLevels[key][0]);
-    }
-    userRanks = userRanks.sort(sortNumber).reverse();
-    let userRank = userRanks.indexOf(userXP) + 1;
-
-    msg.channel.send({
-      embed: {
-        author: {
-          name: msg.member.nickname,
-        },
-        description: xpMessages[getRandomInt(0, xpMessages.length)],
-        thumbnail: { url: msg.author.avatarURL() },
-        color: 0xffffff,
-        fields: [
-          {
-            name: "Level",
-            value: getLevelFromXP(userXP),
-            inline: true
-          },
-          {
-            name: "XP",
-            value: `${userXP}/${getXPFromLevel(getLevelFromXP(userXP) + 1)}`,
-            inline: true
-          },
-          {
-            name: "Rank",
-            value: `${userRank}/${userRanks.length}`,
-            inline: true
-          },
-          {
-            name: "Tokens",
-            value: getTokensFromTotalXP(userLevels[msg.author.id][1]),
-            inline: true
-          }
-        ],
-        footer: { text: 'uniqueusername/u-r-lvl-bot' }
+      if (msg.content.split(" ").length == 2 && typeof msg.mentions.users != undefined) {
+        var userXP = JSON.parse(fs.readFileSync('userLevels.json'))[msg.mentions.users.firstKey()][0];
+        var nameOfUser = msg.mentions.members.first().nickname;
+        var userAvatar = msg.mentions.users.first().avatarURL();
+        var userCheckID = msg.mentions.users.firstKey();
+      } else if (msg.content.split(" ").length == 2 && typeof msg.mentions.user == undefined) {
+        msg.channel.send("Improper syntax! Make sure to mention the user properly. ``_rank @usertocheck#xxxx``");
+        break xpChecker;
+      } else {
+        var userXP = JSON.parse(fs.readFileSync('userLevels.json'))[msg.author.id][0];
+        var nameOfUser = msg.member.nickname;
+        var userAvatar = msg.author.avatarURL();
+        var userCheckID = msg.author.id;
       }
-    });
 
+      var userRanks = []
+      userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
+
+      for (var key in userLevels) {
+        userRanks.push(userLevels[key][0]);
+      }
+      userRanks = userRanks.sort(sortNumber).reverse();
+      let userRank = userRanks.indexOf(userXP) + 1;
+
+      msg.channel.send({
+        embed: {
+          author: {
+            name: nameOfUser,
+          },
+          description: xpMessages[getRandomInt(0, xpMessages.length)],
+          thumbnail: { url: userAvatar },
+          color: 0xffffff,
+          fields: [
+            {
+              name: "Level",
+              value: getLevelFromXP(userXP),
+              inline: true
+            },
+            {
+              name: "XP",
+              value: `${userXP}/${getXPFromLevel(getLevelFromXP(userXP) + 1)}`,
+              inline: true
+            },
+            {
+              name: "Rank",
+              value: `${userRank}/${userRanks.length}`,
+              inline: true
+            },
+            {
+              name: "Tokens",
+              value: getTokensFromTotalXP(userLevels[userCheckID][1]),
+              inline: true
+            }
+          ],
+          footer: { text: 'uniqueusername/u-r-lvl-bot' }
+        }
+      });
+
+    }
   }
 });
 
