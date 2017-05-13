@@ -59,22 +59,18 @@ bot.on('message', msg => {
 bot.on('message', msg => {
   xpChecker: { if (msg.content.toLowerCase() == ("where is the cheeto nick") || msg.content.startsWith("_rank")) {
     if (msg.content.split(" ").length == 2 && msg.mentions.users.firstKey() != undefined) {
-      console.log(msg.mentions.users);
       var userXP = JSON.parse(fs.readFileSync('userLevels.json'))[msg.mentions.users.firstKey()][0];
       var nameOfUser = msg.mentions.members.first().nickname;
       var userAvatar = msg.mentions.users.first().avatarURL();
       var userCheckID = msg.mentions.users.firstKey();
-      console.log("breka1");
     } else if (msg.content.split(" ").length == 2 && msg.mentions.users.firstKey() == undefined) {
       msg.channel.send("Improper syntax! Make sure to mention the user properly. ``_rank @usertocheck#xxxx``");
-      console.log("breka2");
       break xpChecker;
     } else {
       var userXP = JSON.parse(fs.readFileSync('userLevels.json'))[msg.author.id][0];
       var nameOfUser = msg.member.nickname;
       var userAvatar = msg.author.avatarURL();
       var userCheckID = msg.author.id;
-      console.log("breka3");
     }
 
     var userRanks = []
