@@ -21,7 +21,7 @@ var xpMessages = ["i think this is slavery but you have ", "u fuck u got ", "whe
 // give xp per message
 bot.on('message', msg => {
 
-  if(msg.member.roles.filter(role => role.name == ("STRIKE"))) {
+  if(msg.member.roles.filter(role => role.name !== ("STRIKE"))) {
     userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
     let userLevelStats = userStats[msg.author.id];
 
