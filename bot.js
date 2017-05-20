@@ -58,9 +58,10 @@ bot.on('message', msg => {
 // check amount of xp
 bot.on('message', msg => {
   xpChecker: { if (msg.content.toLowerCase() == ("where is the cheeto nick") || msg.content.startsWith("_rank")) {
+    userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
     if (msg.content.split(" ").length == 2 && msg.mentions.users.firstKey() != undefined) {
-      var userXP = JSON.parse(fs.readFileSync('userLevels.json'))[msg.mentions.users.firstKey()][0];
-      var nameOfUser = msg.mentions.members.first().nickname;
+      var userXP = userLevels[msg.mentions.users.firstKey()][0];
+      var nameOfUser = msg.mentions.members.first().displayName;
       var userAvatar = msg.mentions.users.first().avatarURL();
       var userCheckID = msg.mentions.users.firstKey();
     } else if (msg.content.split(" ").length == 2 && msg.mentions.users.firstKey() == undefined) {
@@ -68,13 +69,12 @@ bot.on('message', msg => {
       break xpChecker;
     } else {
       var userXP = JSON.parse(fs.readFileSync('userLevels.json'))[msg.author.id][0];
-      var nameOfUser = msg.member.nickname;
+      var nameOfUser = msg.member.displayName;
       var userAvatar = msg.author.avatarURL();
       var userCheckID = msg.author.id;
     }
 
     var userRanks = []
-    userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
 
     for (var key in userLevels) {
       userRanks.push(userLevels[key][0]);
@@ -118,6 +118,48 @@ bot.on('message', msg => {
 
     }
   }
+});
+
+// leaderboard
+bot.on('message', msg => {
+
+  if (msg.content.toLowerCase() == '_lb' || msg.content.toLowerCase() == "i just stole half these stacks off these racks i didnt even have to pay tax") {
+    userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
+    var userRanks = {};
+
+    for (var key in userLevels) {
+      userRanks[userLevels[key][0]] = key;
+    }
+
+    var topXPList = Object.keys(userRanks).sort(sortNumber).reverse(); // list of top 10 xp numbers
+    var topUsers = [];
+
+    for (var i = 0; i < 10; i++) {
+      var currentNick;
+      var currentMember;
+      var currentUser = bot.fetchUser(userRanks[topXPList[i]])
+        .then(userObject => {
+          currentMember = bot.guilds.first().fetchMember(userObject)
+            .then(memberObject => {
+              currentNick = memberObject.displayName;
+              topUsers.push(currentNick)
+
+              if (topUsers.length == 10) {
+                var leaderboardMessage = "```Current leaderboard:"
+
+                for (let ii = 0; ii < 10; ii++) {
+                  leaderboardMessage += `\n${ii+1}. ${topUsers[ii]} (Level ${getLevelFromXP(topXPList[ii])}) (Total XP: ${topXPList[ii]})`;
+                }
+
+                leaderboardMessage += '```';
+                msg.channel.send(leaderboardMessage);
+
+              }
+            })
+        })
+    }
+  }
+
 });
 
 // token shop

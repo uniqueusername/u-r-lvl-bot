@@ -22,5 +22,9 @@
     "name": "_gift",
     "description": "gift another user tokens (will draw from your token count)",
     "syntax": "_gift [user to gift] [number of tokens]"
+  },
+  {
+    "name": "_leaderboard",
+    "description": "show a leaderboard of the top levels on the server",
   }
 ]}
