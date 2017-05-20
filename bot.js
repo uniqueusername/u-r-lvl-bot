@@ -13,6 +13,7 @@ nunjucks.configure({ autoescape: true, trimBlocks: true, lstripBlocks: true });
 var config;
 var userLevels = {};
 var userStats = {}; // timer, message count, message array
+var activeTrades = [];
 var itemShop = JSON.parse(fs.readFileSync('plugins/itemShop.json'));
 var helpList = JSON.parse(fs.readFileSync('plugins/help.json'));
 
@@ -20,39 +21,35 @@ var xpMessages = ["i think this is slavery but you have ", "u fuck u got ", "whe
 
 // give xp per message
 bot.on('message', msg => {
+  userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
+  let userLevelStats = userStats[msg.author.id];
 
-  if(msg.member.roles.filter(role => role.name !== ("STRIKE") && !msg.author.bot)) {
-    userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
-    let userLevelStats = userStats[msg.author.id];
-
-    // dynamically add xp based on amount of characters and message sent within a minute
-    if (userLevels[msg.author.id] == undefined) {
-      userLevels[msg.author.id] = [0, 0]; // set xp and tokens to 0
-    }
-    if (userLevelStats == undefined) {
-      userLevelStats = { "timerEnabled": false, "messageArray": [] };
-      userStats[msg.author.id] = userLevelStats;
-    }
-    userLevelStats["messageArray"].push(msg.content); // push the message into the message array
-    if (userLevelStats["timerEnabled"] === false) {
-      const numCharacters = userLevelStats["messageArray"].join("").split(" ").join("").length // number of characters in message array without spaces
-      const averageCharacters = Math.floor( numCharacters / userLevelStats["messageArray"].length); // amount of xp per current minute
-      userLevels[msg.author.id][0] += averageCharacters; // add character count / number of messages to user total xp
-      userLevels[msg.author.id][1] += averageCharacters; // add gained xp to token count
-      userLevelStats["timerEnabled"] = true; // 1 for timer enabled
-      userLevelStats["messageArray"] = []; // reset message array
-      // timeout to reset timer after 60 seconds
-      setTimeout(function() {
-        userLevelStats["timerEnabled"] = false;
-      }, 60000);
-      userStats[msg.author.id] = userLevelStats;
-    } else {
-      userStats[msg.author.id] = userLevelStats;
-    }
-
-    fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
-
+  // dynamically add xp based on amount of characters and message sent within a minute
+  if (userLevels[msg.author.id] == undefined) {
+    userLevels[msg.author.id] = [0, 0]; // set xp and tokens to 0
   }
+  if (userLevelStats == undefined) {
+    userLevelStats = { "timerEnabled": false, "messageArray": [] };
+    userStats[msg.author.id] = userLevelStats;
+  }
+  userLevelStats["messageArray"].push(msg.content); // push the message into the message array
+  if (userLevelStats["timerEnabled"] === false) {
+    const numCharacters = userLevelStats["messageArray"].join("").split(" ").join("").length // number of characters in message array without spaces
+    const averageCharacters = Math.floor( numCharacters / userLevelStats["messageArray"].length); // amount of xp per current minute
+    userLevels[msg.author.id][0] += averageCharacters; // add character count / number of messages to user total xp
+    userLevels[msg.author.id][1] += averageCharacters; // add gained xp to token count
+    userLevelStats["timerEnabled"] = true; // 1 for timer enabled
+    userLevelStats["messageArray"] = []; // reset message array
+    // timeout to reset timer after 60 seconds
+    setTimeout(function() {
+      userLevelStats["timerEnabled"] = false;
+    }, 60000);
+    userStats[msg.author.id] = userLevelStats;
+  } else {
+    userStats[msg.author.id] = userLevelStats;
+  }
+
+  fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
 });
 
 // check amount of xp
@@ -246,6 +243,60 @@ bot.on('message', msg => {
       }
     } else {
       msg.channel.send("Invalid amount of tokens! Make sure you send your message in the form ``_gift @userToGift tokensToGift``");
+    }
+  }
+});
+
+// color trade
+bot.on('message', msg => {
+  if (msg.content.toLowerCase().startsWith('_trade')) {
+    var userToTrade = msg.mentions.users.firstKey();
+    var memberToTrade = msg.mentions.members.first();
+    if (userToTrade != undefined) {
+      if (memberToTrade.roles.filter(role => role.name.startsWith("#")).first() != undefined) {
+        userToTrade = bot.fetchUser(userToTrade)
+        .then(userTrade => {
+          msg.channel.send(`<@${userTrade.id}>, would you like to trade colors with <@${msg.author.id}>?`).then(message => {
+            message.react('✔');
+            message.react('✖');
+            activeTrades.push(message.id);
+          });
+        });
+      } else {
+        msg.channel.send("That user does not have a color.");
+      }
+    } else {
+      msg.channel.send("That is not a valid user.");
+    }
+  }
+});
+
+// actual trading of colors
+bot.on('messageReactionAdd', (reaction, user) => {
+  if (activeTrades.includes(reaction.message.id)) {
+    if (user.id != reaction.message.mentions.users.firstKey()) { // firstkey is the user who is being asked
+      return;
+    } else {
+      if (reaction.emoji.name == "✔") {
+        let trader = reaction.message.mentions.members.last();
+        let tradee = reaction.message.mentions.members.first();
+        let traderColor = trader.roles.filter(role => role.name.startsWith("#")).first();
+        let tradeeColor = tradee.roles.filter(role => role.name.startsWith("#")).first();
+
+        trader.removeRole(traderColor);
+        tradee.removeRole(tradeeColor);
+        trader.addRole(tradeeColor);
+        tradee.addRole(traderColor);
+        reaction.message.channel.send("Trade complete.");
+
+        activeTrades.splice(activeTrades.indexOf(reaction.message.id), 1);
+      } else if (reaction.emoji.name == "✖") {
+        reaction.message.channel.send("Trade cancelled.");
+
+        activeTrades.splice(activeTrades.indexOf(reaction.message.id), 1);
+      } else {
+        return;
+      }
     }
   }
 });
