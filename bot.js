@@ -301,6 +301,12 @@ bot.on('messageReactionAdd', (reaction, user) => {
   }
 });
 
+bot.on('message', msg => {
+  if (msg.content.toLowerCase() == "_ping") {
+    msg.channel.send('fuck ``' + bot.ping + 'ms``');
+  }
+})
+
 // random int function
 function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max-min) + min);
