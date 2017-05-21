@@ -276,7 +276,8 @@ bot.on('message', msg => {
 // actual trading of colors
 bot.on('messageReactionAdd', (reaction, user) => {
   if (activeTrades.includes(reaction.message.id)) {
-    if (user.id != reaction.message.mentions.users.lastKey()) { // firstkey is the user who is being asked
+    var tradeeID = reaction.message.content.split(",")[0].split("<")[0].split("@")[0].split(">")[0]
+    if (user.id != tradeeID) { // firstkey is the user who is being asked
       return;
     } else {
       if (reaction.emoji.name == "✔") {
