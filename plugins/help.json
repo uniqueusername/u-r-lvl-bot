@@ -7,7 +7,7 @@
   {
     "name": "_rank",
     "description": "check your current xp and tokens",
-    "syntax": "_rank OR _rank [user to check]"
+    "syntax": "_rank OR _rank [@userToCheck]"
   },
   {
     "name": "_shop",
@@ -21,7 +21,7 @@
   {
     "name": "_gift",
     "description": "gift another user tokens (will draw from your token count)",
-    "syntax": "_gift [user to gift] [number of tokens]"
+    "syntax": "_gift [@userToGift] [number of tokens]"
   },
   {
     "name": "_leaderboard",
@@ -30,6 +30,6 @@
   {
     "name": "_trade",
     "description": "trade colors with other users on the server",
-    "syntax": "_trade [user to trade with]"
+    "syntax": "_trade [@userToTradeWith]"
   }
 ]}
