@@ -250,10 +250,10 @@ bot.on('message', msg => {
 // color trade
 bot.on('message', msg => {
   if (msg.content.toLowerCase().startsWith('_trade')) {
-    var userToTrade = msg.mentions.users.firstKey();
-    var memberToTrade = msg.mentions.members.first();
-    if (userToTrade != undefined) {
-      if (memberToTrade.roles.filter(role => role.name.startsWith("#")).first() != undefined) {
+    var userToTrade = msg.mentions.users.firstKey(); // id of tradee
+    var memberToTrade = msg.mentions.members.first(); // member object of tradee
+    if (userToTrade != undefined && userToTrade != msg.author.id) {
+      if (memberToTrade.roles.filter(role => role.name.startsWith("#")).first() != undefined && msg.member.roles.filter(role => role.name.startsWith("#")).first() != undefined) {
         userToTrade = bot.fetchUser(userToTrade)
         .then(userTrade => {
           msg.channel.send(`<@${userTrade.id}>, would you like to trade colors with <@${msg.author.id}>?`).then(message => {
@@ -263,8 +263,10 @@ bot.on('message', msg => {
           });
         });
       } else {
-        msg.channel.send("That user does not have a color.");
+        msg.channel.send("Either you or the tradee does not have a color.");
       }
+    } else if (userToTrade == msg.author.id) {
+      msg.channel.send("boi u cant trade with yourself");
     } else {
       msg.channel.send("That is not a valid user.");
     }
