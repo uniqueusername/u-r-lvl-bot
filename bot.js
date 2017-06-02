@@ -14,6 +14,7 @@ var config;
 var userLevels = {};
 var userStats = {}; // timer, message count, message array
 var activeTrades = [];
+var leaderboardRequests = [];
 var itemShop = JSON.parse(fs.readFileSync('plugins/itemShop.json'));
 var helpList = JSON.parse(fs.readFileSync('plugins/help.json'));
 
@@ -119,44 +120,16 @@ bot.on('message', msg => {
 
 // leaderboard
 bot.on('message', msg => {
-
   if (msg.content.toLowerCase() == '_lb' || msg.content.toLowerCase() == "i just stole half these stacks off these racks i didnt even have to pay tax") {
-    userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
-    var userRanks = {};
-
-    for (var key in userLevels) {
-      userRanks[userLevels[key][0]] = key;
-    }
-
-    var topXPList = Object.keys(userRanks).sort(sortNumber).reverse(); // list of top 10 xp numbers
-    var topUsers = [];
-
-    for (var i = 0; i < 10; i++) {
-      var currentNick;
-      var currentMember;
-      var currentUser = bot.fetchUser(userRanks[topXPList[i]])
-        .then(userObject => {
-          currentMember = bot.guilds.first().fetchMember(userObject)
-            .then(memberObject => {
-              currentNick = memberObject.displayName;
-              topUsers.push(currentNick)
-
-              if (topUsers.length == 10) {
-                var leaderboardMessage = "```Current leaderboard:"
-
-                for (let ii = 0; ii < 10; ii++) {
-                  leaderboardMessage += `\n${ii+1}. ${topUsers[ii]} (Level ${getLevelFromXP(topXPList[ii])}) (Total XP: ${topXPList[ii]})`;
-                }
-
-                leaderboardMessage += '```';
-                msg.channel.send(leaderboardMessage);
-
-              }
-            })
-        })
-    }
+    msg.reply("👪 for top 10, 🙆 to skip to yourself.")
+      .then(message => {
+        message.react("👪")
+          .then(reaction => {
+            reaction.message.react("🙆")
+            leaderboardRequests.push(reaction.message.id);
+          });
+      });
   }
-
 });
 
 // token shop
@@ -273,10 +246,10 @@ bot.on('message', msg => {
   }
 });
 
-// actual trading of colors
+// actual trading of colors/leaderboard
 bot.on('messageReactionAdd', (reaction, user) => {
   if (activeTrades.includes(reaction.message.id)) {
-    var tradeeID = reaction.message.content.split(",")[0].split("<")[1].split("@")[1].split(">")[0];
+    var tradeeID = reaction.message.mentions.users.firstKey();
     if (user.id != tradeeID) { // firstkey is the user who is being asked
       return;
     } else {
@@ -301,6 +274,19 @@ bot.on('messageReactionAdd', (reaction, user) => {
         return;
       }
     }
+  } else if (leaderboardRequests.includes(reaction.message.id)) {
+    var requesterID = reaction.message.mentions.users.firstKey();
+    if (user.id != requesterID) {
+      return;
+    } else {
+      if (reaction.emoji.name == "👪") {
+        sendTopLeaderboard(reaction.message);
+        leaderboardRequests.splice(leaderboardRequests.indexOf(reaction.message.id), 1);
+      } else if (reaction.emoji.name == "🙆") {
+        sendPersonalLeaderboard(reaction.message);
+        leaderboardRequests.splice(leaderboardRequests.indexOf(reaction.message.id), 1);
+      }
+    }
   }
 });
 
@@ -309,6 +295,86 @@ bot.on('message', msg => {
     msg.channel.send('fuck ``' + bot.ping + 'ms``');
   }
 })
+
+function sendTopLeaderboard(msg) {
+  userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
+  var userRanks = {};
+
+  for (var key in userLevels) {
+    userRanks[userLevels[key][0]] = key;
+  }
+
+  var topXPList = Object.keys(userRanks).sort(sortNumber).reverse(); // list of top 10 xp numbers
+  var topUsers = [];
+
+  for (var i = 0; i < 10; i++) {
+    var currentNick;
+    var currentMember;
+    var currentUser = bot.fetchUser(userRanks[topXPList[i]])
+      .then(userObject => {
+        currentMember = bot.guilds.first().fetchMember(userObject)
+          .then(memberObject => {
+            currentNick = memberObject.displayName;
+            topUsers.push(currentNick)
+
+            if (topUsers.length == 10) {
+              var leaderboardMessage = "```Current leaderboard:"
+
+              for (let ii = 0; ii < 10; ii++) {
+                leaderboardMessage += `\n${ii+1}. ${topUsers[ii]} (Level ${getLevelFromXP(topXPList[ii])}) (Total XP: ${topXPList[ii]})`;
+              }
+
+              leaderboardMessage += '```';
+              msg.channel.send(leaderboardMessage);
+            }
+          })
+      })
+  }
+}
+
+function sendPersonalLeaderboard(msg) {
+  userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
+  var userRanks = {};
+
+  for (var key in userLevels) {
+    userRanks[userLevels[key][0]] = key;
+  }
+
+  var topXPList = Object.keys(userRanks).sort(sortNumber).reverse(); // list of top xp numbers
+  var topUsers = [];
+
+  var requesterID = msg.mentions.users.firstKey();
+  var indexOfRequester = topXPList.indexOf(userLevels[requesterID][0].toString());
+
+  if (indexOfRequester < 2 || indexOfRequester > topXPList.length - 2) {
+    sendTopLeaderboard(msg);
+  } else {
+    for (var i = 0; i < 5; i++) {
+      let currentIndex = i - 2;
+      let currentRank = (indexOfRequester - currentIndex) + 1;
+      bot.fetchUser(userRanks[topXPList[indexOfRequester - currentIndex]])
+        .then(userObject => {
+          bot.guilds.first().fetchMember(userObject)
+            .then (memberObject => {
+              topUsers.push(`${currentRank}. ${memberObject.displayName} (Level ${getLevelFromXP(userLevels[memberObject.id][0])}) (Total XP: ${userLevels[memberObject.id][0]})`);
+              if (topUsers.length == 5) {
+                topUsers = topUsers.reverse();
+                var leaderboardMessage = "```Your position on the leaderboard:"
+                for (var i = 0; i < 5; i++) {
+                  if (i == 2) {
+                    leaderboardMessage += `\n>> ${topUsers[i]}`
+                  } else {
+                    leaderboardMessage += `\n${topUsers[i]}`;
+                  }
+                }
+                leaderboardMessage += "```";
+                msg.channel.send(leaderboardMessage);
+              }
+            });
+        });
+    }
+  }
+}
 
 // random int function
 function getRandomInt(min, max) {

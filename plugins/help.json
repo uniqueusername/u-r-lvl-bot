@@ -24,7 +24,7 @@
     "syntax": "_gift [@userToGift] [number of tokens]"
   },
   {
-    "name": "_leaderboard",
+    "name": "_lb",
     "description": "show a leaderboard of the top levels on the server"
   },
   {
