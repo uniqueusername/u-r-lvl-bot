@@ -221,7 +221,7 @@ bot.on('message', msg => {
 });
 
 // color trade
-bot.on('message', msg => {
+/*bot.on('message', msg => {
   if (msg.content.toLowerCase().startsWith('_trade')) {
     var userToTrade = msg.mentions.users.firstKey(); // id of tradee
     var memberToTrade = msg.mentions.members.first(); // member object of tradee
@@ -244,7 +244,7 @@ bot.on('message', msg => {
       msg.channel.send("That is not a valid user.");
     }
   }
-});
+});*/
 
 // actual trading of colors/leaderboard
 bot.on('messageReactionAdd', (reaction, user) => {
@@ -354,8 +354,10 @@ function sendPersonalLeaderboard(msg) {
       let currentRank = (indexOfRequester - currentIndex) + 1;
       bot.fetchUser(userRanks[topXPList[indexOfRequester - currentIndex]])
         .then(userObject => {
+          console.log(userObject);
           bot.guilds.first().fetchMember(userObject)
             .then (memberObject => {
+              console.log(memberObject);
               topUsers.push(`${currentRank}. ${memberObject.displayName} (Level ${getLevelFromXP(userLevels[memberObject.id][0])}) (Total XP: ${userLevels[memberObject.id][0]})`);
               if (topUsers.length == 5) {
                 topUsers = topUsers.reverse();
