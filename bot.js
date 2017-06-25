@@ -371,10 +371,6 @@ function sendPersonalLeaderboard(msg) {
                 msg.channel.send(leaderboardMessage);
               }
             })
-            .catch(err => {
-              let userToDelete = userLevels.filter(role => role.name == userObject.id);
-              userToDelete.deleteAll();
-            });
         });
     }
   }
