@@ -28,7 +28,7 @@
     "description": "show a leaderboard of the top levels on the server"
   },
   {
-    "name": "_trade",
+    "name": "_trade [currently disabled]",
     "description": "trade colors with other users on the server",
     "syntax": "_trade [@userToTradeWith]"
   }

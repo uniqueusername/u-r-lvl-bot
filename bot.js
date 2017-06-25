@@ -354,10 +354,8 @@ function sendPersonalLeaderboard(msg) {
       let currentRank = (indexOfRequester - currentIndex) + 1;
       bot.fetchUser(userRanks[topXPList[indexOfRequester - currentIndex]])
         .then(userObject => {
-          console.log(userObject);
           bot.guilds.first().fetchMember(userObject)
-            .then (memberObject => {
-              console.log(memberObject);
+            .then(memberObject => {
               topUsers.push(`${currentRank}. ${memberObject.displayName} (Level ${getLevelFromXP(userLevels[memberObject.id][0])}) (Total XP: ${userLevels[memberObject.id][0]})`);
               if (topUsers.length == 5) {
                 topUsers = topUsers.reverse();
@@ -372,6 +370,10 @@ function sendPersonalLeaderboard(msg) {
                 leaderboardMessage += "```";
                 msg.channel.send(leaderboardMessage);
               }
+            })
+            .catch(err => {
+              let userToDelete = userLevels.filter(role => role.name == userObject.id);
+              userToDelete.deleteAll();
             });
         });
     }
