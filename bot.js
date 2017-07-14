@@ -1,5 +1,7 @@
 ﻿// initialization
 
+'use strict';
+
 var Discord = require('discord.js');
 var bot = new Discord.Client();
 var fs = require('fs');
@@ -370,7 +372,7 @@ function sendPersonalLeaderboard(msg) {
                 leaderboardMessage += "```";
                 msg.channel.send(leaderboardMessage);
               }
-            })
+            });
         });
     }
   }
