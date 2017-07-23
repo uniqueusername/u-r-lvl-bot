@@ -25,12 +25,28 @@ var helpList = JSON.parse(fs.readFileSync('plugins/help.json'));
 function anonReset() {
   var currentDate = new Date();
   var timeToResetAnon = new Date();
-  var timeToResetAnon = new Date(currentDate.getFullYear(), currentDate.getMonth(), timeToResetAnon.getDate(), config.anonKeyResetTime, 0, 0, 0);
+  var timeToResetAnon = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), config.anonKeyResetTime, 0, 0, 0);
   var millisLeft = timeToResetAnon.getTime() - currentDate.getTime();
   if (millisLeft <= 0) {
     millisLeft = 86400000 - millisLeft
   }
   setTimeout(function() { fs.writeFileSync('anonKeys.json', '{ }', 'utf8'); anonReset() }, millisLeft);
+}
+
+function ventReset() {
+  var currentDate = new Date();
+  var timeToResetVent = new Date();
+  var timeToResetVent = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), config.ventResetTime, 0, 0, 0);
+  var millisLeft = timeToResetVent.getTime() - currentDate.getTime();
+  if (millisLeft <= 0) {
+    millisLeft = 86400000 - millisLeft
+  }
+  setTimeout(function() {
+    bot.guilds.first().channels.get(config.ventChannel).fetchMessages().then(messages => {
+      bot.guilds.first().channels.get(config.ventChannel).bulkDelete(messages);
+    })
+    ventReset();
+  }, millisLeft);
 }
 
 var xpMessages = ["i think this is slavery but you have ", "u fuck u got ", "when do i get my paycheck, because it better be more than ", "i really am not getting paid for this, can i have some of that juicy ", "u could buy a car with this dank af ", "idk what youre smoking but thats a thicc ", "the snail sleeps for ", "dad said he went to the store but i havent seen him since the fall of ", "you are now allowed to identify as this many genders: ", "bush did ", "where is the cheeto nick"];
@@ -270,7 +286,7 @@ bot.on('message', msg => {
       bot.guilds.first().channels.get(config.anonymousChannel).send(`${anonKeys[msg.author.id]}: ${anonMessage}`);
     } else {
       anonKeys[msg.author.id] = `${chance.word()}${chance.age()}`;
-      bot.guilds.first().channels.get(config.anonymousChannel).send(`${anonKeys[msg.author.id]}: ${anonMessage}`);
+      bot.guilds.first().channels.get(config.anonymousChannel).send(`**${anonKeys[msg.author.id]}:** ${anonMessage}`);
       fs.writeFileSync('anonKeys.json', JSON.stringify(anonKeys), 'utf8');
     }
   }
@@ -453,6 +469,7 @@ loadConfiguration();
 bot.on('ready', () => {
   console.log('u r lvl BOT rEEEEEEEEEEEEEEEEEEEEEEEEEEEE');
   anonReset();
+  ventReset();
 
   if (!fs.existsSync('userLevels.json')) {
     fs.writeFileSync('userLevels.json', '{ }');
