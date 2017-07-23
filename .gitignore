@@ -1,4 +1,5 @@
 node_modules/
 userLevels.json
 config.json
+anonKeys.json
 npm-debug.log

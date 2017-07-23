@@ -13,7 +13,8 @@
     "discord.js": "hydrabolt/discord.js",
     "json-beautify": "*",
     "random-hex-color": "*",
-    "nunjucks": "*"
+    "nunjucks": "*",
+    "chance": "*"
   },
   "main": "bot.js"
 }

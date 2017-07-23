@@ -7,6 +7,8 @@ var bot = new Discord.Client();
 var fs = require('fs');
 var beautify = require('json-beautify');
 var nunjucks = require('nunjucks');
+var Chance = require('chance');
+var chance = new Chance();
 
 nunjucks.configure({ autoescape: true, trimBlocks: true, lstripBlocks: true });
 
@@ -19,6 +21,18 @@ var activeTrades = [];
 var leaderboardRequests = [];
 var itemShop = JSON.parse(fs.readFileSync('plugins/itemShop.json'));
 var helpList = JSON.parse(fs.readFileSync('plugins/help.json'));
+
+function anonReset() {
+  var currentDate = new Date();
+  var timeToResetAnon = new Date();
+  var timeToResetAnon = new Date(currentDate.getFullYear(), currentDate.getMonth(), timeToResetAnon.getDate(), config.anonKeyResetTime, 0, 0, 0);
+  var millisLeft = timeToResetAnon.getTime() - currentDate.getTime();
+  if (millisLeft <= 0) {
+    millisLeft = 86400000 - millisLeft
+  }
+  setTimeout(function() { fs.writeFileSync('anonKeys.json', '{ }', 'utf8'); anonReset() }, millisLeft);
+  console.log(millisLeft / 1000)
+}
 
 var xpMessages = ["i think this is slavery but you have ", "u fuck u got ", "when do i get my paycheck, because it better be more than ", "i really am not getting paid for this, can i have some of that juicy ", "u could buy a car with this dank af ", "idk what youre smoking but thats a thicc ", "the snail sleeps for ", "dad said he went to the store but i havent seen him since the fall of ", "you are now allowed to identify as this many genders: ", "bush did ", "where is the cheeto nick"];
 
@@ -248,6 +262,21 @@ bot.on('message', msg => {
   }
 });*/
 
+bot.on('message', msg => {
+  if (msg.content.toLowerCase().startsWith('_anon')) {
+    var anonKeys = JSON.parse(fs.readFileSync('anonKeys.json'));
+    var anonMessage = cut(msg.content, 0, 5);
+
+    if (anonKeys[msg.author.id] != undefined) {
+      bot.guilds.first().channels.get(config.anonymousChannel).send(`${anonKeys[msg.author.id]}: ${anonMessage}`);
+    } else {
+      anonKeys[msg.author.id] = `${chance.word()}${chance.age()}`;
+      bot.guilds.first().channels.get(config.anonymousChannel).send(`${anonKeys[msg.author.id]}: ${anonMessage}`);
+      fs.writeFileSync('anonKeys.json', JSON.stringify(anonKeys), 'utf8');
+    }
+  }
+})
+
 // actual trading of colors/leaderboard
 bot.on('messageReactionAdd', (reaction, user) => {
   if (activeTrades.includes(reaction.message.id)) {
@@ -424,10 +453,17 @@ loadConfiguration();
 
 bot.on('ready', () => {
   console.log('u r lvl BOT rEEEEEEEEEEEEEEEEEEEEEEEEEEEE');
+  anonReset();
 
   if (!fs.existsSync('userLevels.json')) {
     fs.writeFileSync('userLevels.json', '{ }');
   } else if (fs.readFileSync('userLevels.json') == "") {
+    fs.writeFileSync('userLevels.json', '{ }');
+  }
+
+  if (!fs.existsSync('anonKeys.json')) {
+    fs.writeFileSync('anonKeys.json', '{ }');
+  } else if (fs.readFileSync('anonKeys.json') == "") {
     fs.writeFileSync('userLevels.json', '{ }');
   }
 });

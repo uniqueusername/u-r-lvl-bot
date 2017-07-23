@@ -31,5 +31,10 @@
     "name": "_trade [currently disabled]",
     "description": "trade colors with other users on the server",
     "syntax": "_trade [@userToTradeWith]"
+  },
+  {
+    "name": "_anon",
+    "description": "allows users to send anonymous message under an alias",
+    "syntax": "_anon [message]"
   }
 ]}
