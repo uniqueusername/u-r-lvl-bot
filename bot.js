@@ -286,7 +286,7 @@ bot.on('message', msg => {
       bot.guilds.first().channels.get(config.anonymousChannel).send(`${anonKeys[msg.author.id]}: ${anonMessage}`);
     } else {
       anonKeys[msg.author.id] = `${chance.word()}${chance.age()}`;
-      bot.guilds.first().channels.get(config.anonymousChannel).send(`**${anonKeys[msg.author.id]}:** ${anonMessage}`);
+      bot.guilds.first().channels.get(config.anonymousChannel).send(`${anonKeys[msg.author.id]}: ${anonMessage}`);
       fs.writeFileSync('anonKeys.json', JSON.stringify(anonKeys), 'utf8');
     }
   }
