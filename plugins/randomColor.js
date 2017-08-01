@@ -11,8 +11,11 @@ bot.msg.member.removeRoles(bot.msg.member.roles.filter(role => role.name.startsW
 rolesToRemove.deleteAll();
 
 bot.client.guilds.first().createRole({
-  name: roleName,
-  color: randomHex
+  data: {
+    name: roleName,
+    color: randomHex,
+  },
+  reason: 'random color purchase',
 })
 .then( role => { colorRole = role; return colorRole } )
 .then( colorRole => { bot.msg.member.addRole(colorRole) } )
