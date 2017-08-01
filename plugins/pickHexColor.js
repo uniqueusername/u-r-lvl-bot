@@ -9,8 +9,11 @@ if (/^#[0-9A-F]{6}$/i.test(bot.msg.content.split(" ")[2])) {
   var colorToSet = bot.msg.content.split(" ")[2].substr(1);
   var colorToSet = "0x" + colorToSet;
   bot.client.guilds.first().createRole({
-    name: bot.msg.content.split(" ")[2],
-    color: parseInt(colorToSet)
+    data: {
+      name: bot.msg.content.split(" ")[2],
+      color: parseInt(colorToSet),
+    },
+    reason: 'hex color purchase',
   })
   .then( role => { colorRole = role; return colorRole } )
   .then( colorRole => { bot.msg.member.addRole(colorRole) } )
