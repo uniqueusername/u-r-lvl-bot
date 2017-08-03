@@ -252,21 +252,18 @@ bot.on('message', msg => {
 });
 
 // color trade
-/*bot.on('message', msg => {
+bot.on('message', msg => {
   if (msg.content.toLowerCase().startsWith('_trade')) {
     var userToTrade = msg.mentions.users.firstKey(); // id of tradee
     var memberToTrade = msg.mentions.members.first(); // member object of tradee
     if (userToTrade != undefined && userToTrade != msg.author.id) {
       if (memberToTrade.roles.filter(role => role.name.startsWith("#")).first() != undefined && msg.member.roles.filter(role => role.name.startsWith("#")).first() != undefined) {
-        userToTrade = bot.fetchUser(userToTrade)
-        .then(userTrade => {
-          msg.channel.send(`<@${userTrade.id}>, would you like to trade colors with <@${msg.author.id}>?`).then(message => {
-            message.react('✔');
-            message.react('✖');
-            activeTrades.push(message.id);
-          });
+        msg.channel.send(`<@${userToTrade}>, would you like to trade colors with <@${msg.author.id}>?`).then(message => {
+          message.react('✔');
+          message.react('✖');
+          activeTrades.push(message.id);
         });
-      } else {
+       } else {
         msg.channel.send("Either you or the tradee does not have a color.");
       }
     } else if (userToTrade == msg.author.id) {
@@ -275,7 +272,7 @@ bot.on('message', msg => {
       msg.channel.send("That is not a valid user.");
     }
   }
-});*/
+});
 
 bot.on('message', msg => {
   if (msg.content.toLowerCase().startsWith('_anon')) {
@@ -295,7 +292,9 @@ bot.on('message', msg => {
 // actual trading of colors/leaderboard
 bot.on('messageReactionAdd', (reaction, user) => {
   if (activeTrades.includes(reaction.message.id)) {
-    var tradeeID = reaction.message.mentions.users.firstKey();
+    var tradeeID = reaction.message.content.split(",")[0];
+    tradeeID = cut(tradeeID, 0, 1);
+    tradeeID = cut(tradeeID, tradeeID.length - 1, tradeeID.length)
     if (user.id != tradeeID) { // firstkey is the user who is being asked
       return;
     } else {
