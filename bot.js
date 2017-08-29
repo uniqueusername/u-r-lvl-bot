@@ -42,9 +42,28 @@ function ventReset() {
     millisLeft = 86400000 - millisLeft
   }
   setTimeout(function() {
-    bot.guilds.first().channels.get(config.ventChannel).fetchMessages().then(messages => {
-      bot.guilds.first().channels.get(config.ventChannel).bulkDelete(messages);
-    })
+    /*if (bot.guilds.first().channels.get(config.ventChannel).messages.array().length > 100) {
+      var numberOfMessages = bot.guilds.first().channels.get(config.ventChannel).messages.array().length;
+      var numberOfClears = Math.ceil(numberOfMessages / 100);
+      console.log(numberOfMessages);
+      for (var i = 0; i < numberOfClears; i++) {
+        bot.guilds.first().channels.get(config.ventChannel).bulkDelete(100);
+      }
+    } else {
+      bot.guilds.first().channels.get(config.ventChannel).fetchMessages().then(messages => {
+        bot.guilds.first().channels.get(config.ventChannel).bulkDelete(messages);
+      });
+    }*/
+    bot.guilds.first().channels.get(config.ventChannel).delete().then(channel => {
+      bot.guilds.first().createChannel("vent", "text").then(channel2 => {
+        channel2.setPosition(config.ventPosition);
+        channel2.setTopic("im mad ya dip");
+        config.ventChannel = channel2.id;
+        config.anonymousChannel = channel2.id;
+        fs.writeFileSync('config.json', config, 'utf8');;
+      });
+    });
+
     ventReset();
   }, millisLeft);
 }
