@@ -348,38 +348,39 @@ bot.on('messageReactionAdd', (reaction, user) => {
 });
 
 bot.on('message', msg => {
-  if (msg.content.toLowerCase() == "_cast join") {
-    channelPending = true;
-    msg.member.voiceChannel.join().then(vc => {
-      currentStream = vc;
-      channelPending = false;
-    });
-  } else if (msg.content.toLowerCase() == "_cast leave") {
-    if (bot.voiceConnections.first() != undefined) {
-      bot.voiceConnections.first().disconnect();
-      currentStream = undefined;
-      currentlyPlaying = undefined;
+  if (msg.author.id == config.adminID) {
+    if (msg.content.toLowerCase() == "_cast join") {
+      channelPending = true;
+      msg.member.voiceChannel.join().then(vc => {
+        currentStream = vc;
+        channelPending = false;
+      });
+    } else if (msg.content.toLowerCase() == "_cast leave") {
+      if (bot.voiceConnections.first() != undefined) {
+        bot.voiceConnections.first().disconnect();
+        currentStream = undefined;
+        currentlyPlaying = undefined;
+      } else {
+        return;
+      }
+    }
+
+    if (!channelPending) {
+      if (msg.content.toLowerCase() == "_cast play" && currentStream != undefined) {
+        currentlyPlaying = currentStream.playStream(config.streamPath);
+      } else if (msg.content.toLowerCase() == "_cast play" && currentStream == undefined) {
+        msg.channel.send("**Error!** You must execute ``_cast join`` first.");
+      } else if (msg.content.toLowerCase() == "_cast stop" && currentlyPlaying != undefined) {
+        currentlyPlaying.end();
+      } else if (msg.content.toLowerCase() == "_cast pause" && currentlyPlaying != undefined) {
+        currentlyPlaying.pause();
+      } else if (msg.content.toLowerCase() == "_cast resume" && currentlyPlaying != undefined) {
+        currentlyPlaying.resume();
+      };
     } else {
       return;
     }
   }
-
-  if (!channelPending) {
-    if (msg.content.toLowerCase() == "_cast play" && currentStream != undefined) {
-      currentlyPlaying = currentStream.playStream(config.streamPath);
-    } else if (msg.content.toLowerCase() == "_cast play" && currentStream == undefined) {
-      msg.channel.send("**Error!** You must execute ``_cast join`` first.");
-    } else if (msg.content.toLowerCase() == "_cast stop" && currentlyPlaying != undefined) {
-      currentlyPlaying.end();
-    } else if (msg.content.toLowerCase() == "_cast pause" && currentlyPlaying != undefined) {
-      currentlyPlaying.pause();
-    } else if (msg.content.toLowerCase() == "_cast resume" && currentlyPlaying != undefined) {
-      currentlyPlaying.resume();
-    };
-  } else {
-    return;
-  }
-
 });
 
 bot.on('message', msg => {
