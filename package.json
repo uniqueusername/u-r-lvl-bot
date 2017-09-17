@@ -14,7 +14,8 @@
     "json-beautify": "*",
     "random-hex-color": "*",
     "nunjucks": "*",
-    "chance": "*"
+    "chance": "*",
+    "node-opus": "*"
   },
   "main": "bot.js"
 }

@@ -10,6 +10,8 @@ var nunjucks = require('nunjucks');
 var Chance = require('chance');
 var chance = new Chance();
 
+require('events').EventEmitter.prototype._maxListeners = 100;
+
 nunjucks.configure({ autoescape: true, trimBlocks: true, lstripBlocks: true });
 
 // global vars
@@ -21,6 +23,9 @@ var activeTrades = [];
 var leaderboardRequests = [];
 var itemShop = JSON.parse(fs.readFileSync('plugins/itemShop.json'));
 var helpList = JSON.parse(fs.readFileSync('plugins/help.json'));
+var currentStream;
+var currentlyPlaying;
+var channelPending = false;
 
 function anonReset() {
   var currentDate = new Date();
@@ -343,10 +348,45 @@ bot.on('messageReactionAdd', (reaction, user) => {
 });
 
 bot.on('message', msg => {
+  if (msg.content.toLowerCase() == "_cast join") {
+    channelPending = true;
+    msg.member.voiceChannel.join().then(vc => {
+      currentStream = vc;
+      channelPending = false;
+    });
+  } else if (msg.content.toLowerCase() == "_cast leave") {
+    if (bot.voiceConnections.first() != undefined) {
+      bot.voiceConnections.first().disconnect();
+      currentStream = undefined;
+      currentlyPlaying = undefined;
+    } else {
+      return;
+    }
+  }
+
+  if (!channelPending) {
+    if (msg.content.toLowerCase() == "_cast play" && currentStream != undefined) {
+      currentlyPlaying = currentStream.playStream(config.streamPath);
+    } else if (msg.content.toLowerCase() == "_cast play" && currentStream == undefined) {
+      msg.channel.send("**Error!** You must execute ``_cast join`` first.");
+    } else if (msg.content.toLowerCase() == "_cast stop" && currentlyPlaying != undefined) {
+      currentlyPlaying.end();
+    } else if (msg.content.toLowerCase() == "_cast pause" && currentlyPlaying != undefined) {
+      currentlyPlaying.pause();
+    } else if (msg.content.toLowerCase() == "_cast resume" && currentlyPlaying != undefined) {
+      currentlyPlaying.resume();
+    };
+  } else {
+    return;
+  }
+
+});
+
+bot.on('message', msg => {
   if (msg.content.toLowerCase() == "_ping") {
     msg.channel.send('fuck ``' + bot.ping + 'ms``');
   }
-})
+});
 
 function sendTopLeaderboard(msg) {
   userLevels = JSON.parse(fs.readFileSync('userLevels.json'));
@@ -473,9 +513,9 @@ function loadConfiguration(callback) {
 loadConfiguration();
 
 bot.on('ready', () => {
-  console.log('u r lvl BOT rEEEEEEEEEEEEEEEEEEEEEEEEEEEE');
   anonReset();
   ventReset();
+  console.log('u r lvl BOT rEEEEEEEEEEEEEEEEEEEEEEEEEEEE');
 
   if (!fs.existsSync('userLevels.json')) {
     fs.writeFileSync('userLevels.json', '{ }');
