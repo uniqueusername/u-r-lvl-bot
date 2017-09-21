@@ -39,7 +39,7 @@ function anonReset() {
 }
 
 function ventReset() {
-  /*var currentDate = new Date();
+  var currentDate = new Date();
   var timeToResetVent = new Date();
   var timeToResetVent = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate(), config.ventResetTime, 0, 0, 0);
   var millisLeft = timeToResetVent.getTime() - currentDate.getTime();
@@ -49,7 +49,6 @@ function ventReset() {
   setTimeout(function() {
     bot.guilds.first().channels.get(config.ventChannel).delete().then(channel => {
       bot.guilds.first().createChannel("vent", "text").then(channel2 => {
-        console.log(config.ventPosition);
         channel2.setPosition(config.ventPosition);
         channel2.setTopic("im mad ya dip");
         config.ventChannel = channel2.id;
@@ -59,7 +58,7 @@ function ventReset() {
     });
 
     ventReset();
-  }, 5000);*/
+  }, millisLeft);
 }
 var xpMessages = ["i think this is slavery but you have ", "u fuck u got ", "when do i get my paycheck, because it better be more than ", "i really am not getting paid for this, can i have some of that juicy ", "u could buy a car with this dank af ", "idk what youre smoking but thats a thicc ", "the snail sleeps for ", "dad said he went to the store but i havent seen him since the fall of ", "you are now allowed to identify as this many genders: ", "bush did ", "where is the cheeto nick"];
 
