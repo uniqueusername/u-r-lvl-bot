@@ -403,9 +403,9 @@ function sendTopLeaderboard(msg) {
   for (var i = 0; i < 10; i++) {
     var currentNick;
     var currentMember;
-    var currentUser = bot.fetchUser(userRanks[topXPList[i]])
+    var currentUser = bot.users.fetch(userRanks[topXPList[i]])
       .then(userObject => {
-        currentMember = bot.guilds.first().fetchMember(userObject)
+        currentMember = bot.guilds.first().members.fetch(userObject)
           .then(memberObject => {
             currentNick = memberObject.displayName;
             topUsers.push(currentNick)
@@ -445,9 +445,9 @@ function sendPersonalLeaderboard(msg) {
     for (var i = 0; i < 5; i++) {
       let currentIndex = i - 2;
       let currentRank = (indexOfRequester - currentIndex) + 1;
-      bot.fetchUser(userRanks[topXPList[indexOfRequester - currentIndex]])
+      bot.users.fetch(userRanks[topXPList[indexOfRequester - currentIndex]])
         .then(userObject => {
-          bot.guilds.first().fetchMember(userObject)
+          bot.guilds.first().members.fetch(userObject)
             .then(memberObject => {
               topUsers.push(`${currentRank}. ${memberObject.displayName} (Level ${getLevelFromXP(userLevels[memberObject.id][0])}) (Total XP: ${userLevels[memberObject.id][0]})`);
               if (topUsers.length == 5) {
