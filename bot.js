@@ -248,7 +248,9 @@ bot.on('message', msg => {
 
     if (isNaN(parseInt(msg.content.split(' ')[2])) === false) {
       var amountToGift = parseInt(msg.content.split(' ')[2]);
-      if (userLevels[msg.author.id][1] >= amountToGift*1000) {
+      if (amountToGift < 0) {
+        msg.channel.send("U sneaky that isn't gonna work this time");
+      } else if (userLevels[msg.author.id][1] >= amountToGift*1000) {
         userLevels[msg.author.id][1] -= amountToGift*1000;
         userLevels[userToGift][1] += amountToGift*1000;
         fs.writeFileSync('userLevels.json', JSON.stringify(userLevels), 'utf8');
