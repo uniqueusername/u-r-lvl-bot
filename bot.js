@@ -49,8 +49,10 @@ function ventReset() {
   setTimeout(function() {
     bot.guilds.first().channels.get(config.ventChannel).delete().then(channel => {
       bot.guilds.first().createChannel("vent", "text").then(channel2 => {
-        channel2.setPosition(config.ventPosition);
+        let ventCategory = bot.guilds.first().channels.get(config.ventCategory);
         channel2.setTopic("im mad ya dip");
+        channel2.setParent(ventCategory)
+        channel2.setPosition(config.ventPosition);
         config.ventChannel = channel2.id;
         config.anonymousChannel = channel2.id;
         fs.writeFileSync('config.json', JSON.stringify(config), 'utf8');
