@@ -530,6 +530,6 @@ bot.on('ready', () => {
   if (!fs.existsSync('anonKeys.json')) {
     fs.writeFileSync('anonKeys.json', '{ }');
   } else if (fs.readFileSync('anonKeys.json') == "") {
-    fs.writeFileSync('userLevels.json', '{ }');
+    fs.writeFileSync('anonKeys.json', '{ }');
   }
 });
