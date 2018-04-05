@@ -10,7 +10,7 @@ var nunjucks = require('nunjucks');
 var Chance = require('chance');
 var chance = new Chance();
 
-require('events').EventEmitter.prototype._maxListeners = 100;
+require('events').EventEmitter.defaultMaxListeners = 15;
 
 nunjucks.configure({ autoescape: true, trimBlocks: true, lstripBlocks: true });
 
@@ -48,7 +48,7 @@ function ventReset() {
   }
   setTimeout(function() {
     bot.guilds.first().channels.get(config.ventChannel).delete().then(channel => {
-      bot.guilds.first().createChannel("vent", "text").then(channel2 => {
+      bot.guilds.first().channels.create("vent", "text").then(channel2 => {
         let ventCategory = bot.guilds.first().channels.get(config.ventCategory);
         channel2.setTopic("im mad ya dip");
         channel2.setParent(ventCategory)
@@ -266,7 +266,7 @@ bot.on('message', msg => {
   }
 });
 
-// color trade
+/*// color trade
 bot.on('message', msg => {
   if (msg.content.toLowerCase().startsWith('_trade')) {
     var userToTrade = msg.mentions.users.firstKey(); // id of tradee
@@ -287,7 +287,7 @@ bot.on('message', msg => {
       msg.channel.send("That is not a valid user.");
     }
   }
-});
+});*/
 
 bot.on('message', msg => {
   if (msg.content.toLowerCase().startsWith('_anon')) {
@@ -306,7 +306,7 @@ bot.on('message', msg => {
 
 // actual trading of colors/leaderboard
 bot.on('messageReactionAdd', (reaction, user) => {
-  if (activeTrades.includes(reaction.message.id)) {
+  /*if (activeTrades.includes(reaction.message.id)) {
     var tradeeID = reaction.message.content.split(",")[0];
     tradeeID = cut(tradeeID, 0, 1);
     tradeeID = cut(tradeeID, tradeeID.length - 1, tradeeID.length)
@@ -319,10 +319,10 @@ bot.on('messageReactionAdd', (reaction, user) => {
         let traderColor = trader.roles.filter(role => role.name.startsWith("#")).first();
         let tradeeColor = tradee.roles.filter(role => role.name.startsWith("#")).first();
 
-        trader.removeRole(traderColor);
-        tradee.removeRole(tradeeColor);
-        trader.addRole(tradeeColor);
-        tradee.addRole(traderColor);
+        trader.roles.remove(traderColor);
+        tradee.roles.remove(tradeeColor);
+        trader.roles.add(tradeeColor);
+        tradee.roles.add(traderColor);
         reaction.message.channel.send("Trade complete.");
 
         activeTrades.splice(activeTrades.indexOf(reaction.message.id), 1);
@@ -334,7 +334,7 @@ bot.on('messageReactionAdd', (reaction, user) => {
         return;
       }
     }
-  } else if (leaderboardRequests.includes(reaction.message.id)) {
+  } else */if (leaderboardRequests.includes(reaction.message.id)) {
     var requesterID = reaction.message.mentions.users.firstKey();
     if (user.id != requesterID) {
       return;

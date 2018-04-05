@@ -4,11 +4,11 @@ var colorRole;
 
 if (/^#[0-9A-F]{6}$/i.test(bot.msg.content.split(" ")[2])) {
   var rolesToRemove = bot.msg.member.roles.filter(role => role.name.startsWith("#"));
-  bot.msg.member.removeRoles(bot.msg.member.roles.filter(role => role.name.startsWith("#")));
+  bot.msg.member.roles.remove(bot.msg.member.roles.filter(role => role.name.startsWith("#")));
   rolesToRemove.deleteAll();
   var colorToSet = bot.msg.content.split(" ")[2].substr(1);
   var colorToSet = "0x" + colorToSet;
-  bot.client.guilds.first().createRole({
+  bot.client.guilds.first().roles.create({
     data: {
       name: bot.msg.content.split(" ")[2],
       color: parseInt(colorToSet),
@@ -16,7 +16,7 @@ if (/^#[0-9A-F]{6}$/i.test(bot.msg.content.split(" ")[2])) {
     reason: 'hex color purchase',
   })
   .then( role => { colorRole = role; return colorRole } )
-  .then( colorRole => { bot.msg.member.addRole(colorRole) } )
+  .then( colorRole => { bot.msg.member.roles.add(colorRole) } )
   bot.msg.channel.send({
     embed: {
       author: {

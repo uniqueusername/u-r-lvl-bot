@@ -7,10 +7,10 @@ var randomHex = roleName.substr(1);
 var randomHex = "0x" + randomHex;
 
 var rolesToRemove = bot.msg.member.roles.filter(role => role.name.startsWith("#"));
-bot.msg.member.removeRoles(bot.msg.member.roles.filter(role => role.name.startsWith("#")));
+bot.msg.member.roles.remove(bot.msg.member.roles.filter(role => role.name.startsWith("#")));
 rolesToRemove.deleteAll();
 
-bot.client.guilds.first().createRole({
+bot.client.guilds.first().roles.create({
   data: {
     name: roleName,
     color: randomHex,
@@ -18,7 +18,7 @@ bot.client.guilds.first().createRole({
   reason: 'random color purchase',
 })
 .then( role => { colorRole = role; return colorRole } )
-.then( colorRole => { bot.msg.member.addRole(colorRole) } )
+.then( colorRole => { bot.msg.member.roles.add(colorRole) } )
 
 bot.msg.channel.send({
   embed: {
