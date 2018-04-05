@@ -7,10 +7,10 @@
     "bot",
     "chatbot"
   ],
-  "repository": "https://github.com/uniqueusername/urlvlbot",
+  "repository": "https://github.com/uniqueusername/u-r-lvl-bot",
   "author": "Aryan Jha <aryan@jha.io>",
   "dependencies": {
-    "discord.js": "hydrabolt/discord.js",
+    "discord.js": "discordjs/discord.js",
     "json-beautify": "*",
     "random-hex-color": "*",
     "nunjucks": "*",
