@@ -10,12 +10,12 @@
   "repository": "https://github.com/uniqueusername/u-r-lvl-bot",
   "author": "Aryan Jha <aryan@jha.io>",
   "dependencies": {
+    "chance": "*",
     "discord.js": "discordjs/discord.js",
     "json-beautify": "*",
-    "random-hex-color": "*",
+    "node-opus": "^0.2.7",
     "nunjucks": "*",
-    "chance": "*",
-    "node-opus": "*"
+    "random-hex-color": "*"
   },
   "main": "bot.js"
 }

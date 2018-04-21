@@ -370,7 +370,7 @@ bot.on('message', msg => {
 
     if (!channelPending) {
       if (msg.content.toLowerCase() == "_cast play" && currentStream != undefined) {
-        currentlyPlaying = currentStream.playStream(config.streamPath);
+        currentlyPlaying = currentStream.play(config.streamPath);
       } else if (msg.content.toLowerCase() == "_cast play" && currentStream == undefined) {
         msg.channel.send("**Error!** You must execute ``_cast join`` first.");
       } else if (msg.content.toLowerCase() == "_cast stop" && currentlyPlaying != undefined) {
